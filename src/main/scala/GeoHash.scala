@@ -59,6 +59,37 @@ object GeoHash {
     )
   }
 
+  val appropriate:Map[Symbol, Map[Int, Double]] = Map(
+    'latitude -> Map(
+      12 -> 0.000000167638065,
+      11 -> 0.000001341104504,
+      10 -> 0.00000536441803,
+      9 -> 0.00004291534424,
+      8 -> 0.000171661376956,
+      7 -> 0.00137329101562,
+      6 -> 0.00549316406250,
+      5 -> 0.04394531250,
+      4 -> 0.175781250,
+      3 -> 1.406250,
+      2 -> 5.6250,
+      1 -> 45
+    ),
+    'longitude -> Map(
+      12 -> 0.00000033527613,
+      11 -> 0.00000134110452,
+      10 -> 0.00001072883605,
+      9 -> 0.00004291534424,
+      8 -> 0.00034332275392,
+      7 -> 0.00137329101562,
+      6 -> 0.0109863281250,
+      5 -> 0.04394531250,
+      4 -> 0.35156250,
+      3 -> 1.406250,
+      2 -> 11.250,
+      1 -> -315
+    )
+  )
+
   def toDir(str: String): Option[Symbol] = dirs.find(_.name.equals(str))
 
   def adjacent(srcHash: String, dir: Symbol): String = {
@@ -137,6 +168,35 @@ object GeoHash {
         }
       }.reduceLeft( (a, b) => a | b )
     }.mkString("")
+  }
+
+  def encodeRange(min: LatLng, max: LatLng): List[String] = encodeRange(min, max, 12)
+  def encodeRange(min: LatLng, max: LatLng, precision: Int): List[String] = {
+    if(precision < 1 || 12 < precision){
+      throw new java.lang.IndexOutOfBoundsException("precision must be 1 <= precision <= 12")
+    }
+
+    var minLat = min.latitude
+    var minLon = min.longitude
+    var maxLat = max.latitude
+    var maxLon = max.longitude
+    var stepLat = appropriate('latitude)(precision)
+    var stepLon = appropriate('longitude)(precision)
+
+    var hashes = Set[String]()
+    var lat = minLat
+    do {
+      var lon = minLon
+      do {
+        hashes = hashes + encode(lat, lon, precision)
+
+        lon = lon + stepLon
+      } while(lon <= maxLon)
+
+      lat = lat + stepLat
+    } while(lat <= maxLat)
+
+    hashes.toList
   }
 
   def within(geohash: String, latlng: LatLng): Boolean = {
