@@ -97,8 +97,37 @@ class GeoHashSuite extends FunSuite with ShouldMatchers {
 
     encodeRange(min, max, 7) should ( contain(geohash) and contain(r_1) and contain(r_2) )
   }
+  test("test encodeRange left left") {
+    var geohash = "xn77hm3"
+    var r_1 = adjacent(geohash, 'left)
+    var r_2 = adjacent(r_1, 'left)
+    
+    var d = decode(geohash)
+    var d_2 = decode(r_2)
 
-  test("test encodeRange right botton") {
+    var min = LatLng(d._1, d._2)
+    var max = LatLng(d_2._1, d_2._2)
+
+    encodeRange(min, max, 7) should ( contain(geohash) and contain(r_1) and contain(r_2) )
+  }
+
+  test("test encodeRange left top") {
+    var geohash = "xn77hm3"
+    var r_1 = adjacent(geohash, 'left)
+    var r_2 = adjacent(r_1, 'top)
+    
+    var d = decode(geohash)
+    var d_2 = decode(r_2)
+
+    var min = LatLng(d._1, d._2)
+    var max = LatLng(d_2._1, d_2._2)
+
+    encodeRange(min, max, 7) should (
+      contain(geohash) and contain(r_1) and contain(r_2)
+    )
+  }
+
+  test("test encodeRange right bottom") {
     var geohash = "xn77hm3"
     var r_1 = adjacent(geohash, 'right)
     var r_2 = adjacent(r_1, 'bottom)
@@ -111,13 +140,11 @@ class GeoHashSuite extends FunSuite with ShouldMatchers {
     var min = LatLng(d._1, d._2)
     var max = LatLng(d_2._1, d_2._2)
 
-    println( encodeRange(min, max, 7) )
-    println(r_1)
-    println(r_2)
-    println(r_3)
     encodeRange(min, max, 7) should (
       contain(geohash)
       and contain(r_1)
+      and contain(r_2)
+      and contain(r_3)
     )
   }
 }

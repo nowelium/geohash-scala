@@ -176,10 +176,26 @@ object GeoHash {
       throw new java.lang.IndexOutOfBoundsException("precision must be 1 <= precision <= 12")
     }
 
-    var minLat = min.latitude
-    var minLon = min.longitude
-    var maxLat = max.latitude
-    var maxLon = max.longitude
+    var minLat = 0.0D
+    var minLon = 0.0D
+    var maxLat = 0.0D
+    var maxLon = 0.0D
+
+    if(min.latitude < max.latitude){
+      minLat = min.latitude
+      maxLat = max.latitude
+    } else {
+      minLat = max.latitude
+      maxLat = min.latitude
+    }
+    if(min.longitude < max.longitude){
+      minLon = min.longitude
+      maxLon = max.longitude
+    } else {
+      minLon = max.longitude
+      maxLon = min.longitude
+    }
+
     var stepLat = appropriate('latitude)(precision)
     var stepLon = appropriate('longitude)(precision)
 
